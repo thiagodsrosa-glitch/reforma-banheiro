@@ -7,7 +7,7 @@ export async function GET() {
   let hostInfo = 'desconhecido'
   try {
     const u = new URL(url)
-    hostInfo = `${u.hostname}:${u.port}/${u.pathname.slice(1)}`
+    hostInfo = `${u.hostname}:${u.port || '5432'}/${u.pathname.slice(1)}`
   } catch {}
 
   try {
