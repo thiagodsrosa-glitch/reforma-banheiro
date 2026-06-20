@@ -9,6 +9,12 @@ export async function POST(request: NextRequest) {
   if (body.isGroup === false) return NextResponse.json({ ok: true })
   if (body.fromMe === true) return NextResponse.json({ ok: true })
 
+  // Filtra apenas o grupo da reforma
+  const GRUPO_NOME = process.env.WHATSAPP_GROUP_NAME ?? 'Reforma Matriz'
+  if (body.chatName && !body.chatName.includes(GRUPO_NOME)) {
+    return NextResponse.json({ ok: true, ignored: 'outro grupo' })
+  }
+
   let sender: string
   let content: string
   let mediaUrl: string | null = null
