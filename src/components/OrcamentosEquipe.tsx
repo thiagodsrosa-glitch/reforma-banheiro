@@ -81,8 +81,8 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg shadow-xl max-h-[95vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
               <h2 className="font-semibold text-gray-900">Novo Orçamento</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">✕</button>

@@ -59,8 +59,8 @@ export default function UsuariosAdmin({ users: initial }: { users: User[] }) {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md shadow-xl">
+        <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md shadow-xl max-h-[95vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-semibold text-gray-900">Novo Usuário</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">✕</button>
@@ -136,8 +136,8 @@ export default function UsuariosAdmin({ users: initial }: { users: User[] }) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden overflow-x-auto">
+        <table className="w-full text-sm min-w-[500px]">
           <thead>
             <tr className="border-b border-gray-100">
               <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Nome</th>

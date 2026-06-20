@@ -11,7 +11,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="flex h-screen overflow-hidden">
       <Sidebar userName={session.name} role="ADMIN" />
       <main className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="p-8">{children}</div>
+        {/* pt-14 compensa o header fixo do mobile */}
+        <div className="p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">{children}</div>
       </main>
     </div>
   )

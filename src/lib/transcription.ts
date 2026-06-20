@@ -1,9 +1,14 @@
 import OpenAI from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+// Cliente criado apenas em tempo de execução (não no build)
+function getClient() {
+  if (!process.env.OPENAI_API_KEY) return null
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+}
 
 export async function transcribeAudio(audioUrl: string): Promise<string | null> {
-  if (!process.env.OPENAI_API_KEY) return null
+  const openai = getClient()
+  if (!openai) return null
   try {
     const response = await fetch(audioUrl)
     if (!response.ok) return null

@@ -39,7 +39,7 @@ export default function GastosAdmin({ expenses: initial }: { expenses: Expense[]
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[650px]">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Descrição</th>
