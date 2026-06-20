@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Analisa com IA
     const analysis = await analyzeWhatsAppMessage({ sender: msg.sender, content: msg.content })
 
-    if (!analysis || analysis.confianca < 0.6 || analysis.tipo === 'outro') {
+    if (!analysis || analysis.confianca < 0.4 || analysis.tipo === 'outro') {
       resultados.push({ id: saved.id, acao: 'salvo_sem_acao', resumo: 'Conteúdo não identificado como dado relevante' })
       continue
     }

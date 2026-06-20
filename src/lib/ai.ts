@@ -2,12 +2,16 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const SYSTEM_PROMPT = `Você é um assistente que analisa mensagens de um grupo de WhatsApp sobre a REFORMA DO BANHEIRO MASCULINO da Igreja Matriz.
+const SYSTEM_PROMPT = `Você é um assistente que analisa mensagens de um grupo de WhatsApp da Igreja Matriz relacionadas à REFORMA e às atividades do período da obra.
+
+O grupo trata da reforma do banheiro masculino, MAS TAMBÉM inclui despesas e autorizações relacionadas ao período da obra: aluguel de banheiros químicos, materiais de apoio, serviços temporários, convenções, pagamentos de fornecedores, etc. QUALQUER valor, autorização ou pagamento mencionado é relevante.
 
 PESSOAS-CHAVE:
-- Felipe: Presidente e autorizador principal. Quando ele aprova no grupo, é uma autorização oficial.
-- Hyanna: Esposa de Felipe, também autoriza compras e serviços.
-- Tesouraria: Executa pagamentos após autorização.
+- Felipe (Pr. Felipe): Presidente executivo e autorizador principal.
+- Hyanna (Pra. Hyanna): Esposa de Felipe, também autoriza.
+- Pr. Caio / Secretário-Geral: Solicita autorizações em nome da diretoria.
+- Tesouraria / Tesoureiro: Executa pagamentos após autorização.
+- Qualquer menção a "o presidente autorizou" ou "peço autorização" é um pedido/confirmação de pagamento.
 
 ETAPAS DA REFORMA (em ordem — cada etapa depende das anteriores):
 1. Planejamento e Projeto
@@ -21,14 +25,17 @@ ETAPAS DA REFORMA (em ordem — cada etapa depende das anteriores):
 
 CATEGORIAS DISPONÍVEIS: Material, Mão de obra, Equipamento, Hidráulica, Elétrica, Revestimento, Pintura, Outro
 
-REGRAS:
-- Se a mensagem mencionar um preço/valor E um produto/serviço, é um orçamento.
-- Se a mensagem diz que já foi pago ou comprado, é um gasto/pagamento realizado.
-- Se Felipe ou Hyanna disser "pode comprar", "aprovado", "ok", "confirma" → é uma autorização.
-- Para gastos, o valor é o que foi EFETIVAMENTE PAGO.
-- Para orçamentos, o valor é a PROPOSTA recebida.
-- Se mencionar progresso de uma etapa (ex: "acabamos a demolição"), é uma atualização de etapa.
-- Identifique a etapa mais provável com base no conteúdo (ex: "azulejo" → Revestimentos, "encanamento" → Hidráulica).`
+REGRAS IMPORTANTES:
+- Se a mensagem mencionar QUALQUER valor em reais (R$, diária, total) + produto/serviço → é orçamento ou gasto.
+- "Peço autorização para pagamento" + valor → é um orçamento com status PENDING.
+- "O presidente autorizou" → confirma autorização (status APPROVED).
+- Se Felipe ou Hyanna disserem "ok", "aprovado", "pode pagar", "autorizado" → status APPROVED.
+- Aluguel de banheiros químicos, equipamentos temporários, serviços de apoio → são gastos/orçamentos válidos, categoria "Outro".
+- Se mencionar CPF, banco, pix, chave → é dado de pagamento (registrar junto com o orçamento/gasto).
+- Se mencionar progresso, conclusão ou início de uma etapa → é atualização de etapa.
+- Identifique a etapa mais provável: azulejo/revestimento → Revestimentos; encanamento/hidráulica → Hidráulica; elétrica → Elétrica; pintura → Pintura e Acabamento; banheiro químico → null (não é etapa da reforma).
+- NUNCA retorne tipo "outro" se houver um valor monetário na mensagem. Valores = sempre orcamento ou gasto.
+- Confiança mínima para registrar: 0.4 (seja generoso — é melhor registrar e revisar depois).`
 
 export interface AIAnalysis {
   tipo: 'orcamento' | 'gasto' | 'atualizacao_etapa' | 'autorizacao' | 'pagamento' | 'outro'

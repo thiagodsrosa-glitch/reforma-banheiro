@@ -24,19 +24,21 @@ export default function ImportarPage() {
   const [erro, setErro] = useState('')
 
   function parsearMensagens(raw: string) {
-    const linhas = raw.split('\n').filter((l) => l.trim())
+    // Mantém quebras de linha internas preservando o conteúdo real
+    const linhas = raw.split('\n')
     const msgs: { sender: string; content: string; sentAt?: string }[] = []
 
-    // Tenta detectar formato de exportação do WhatsApp:
-    // [DD/MM/YYYY, HH:MM:SS] Nome: mensagem
-    // ou DD/MM/YYYY HH:MM - Nome: mensagem
-    const regexWA1 = /^\[?(\d{2}\/\d{2}\/\d{4})[,\s]+(\d{2}:\d{2}(?::\d{2})?)\]?\s*[-–]?\s*([^:]+):\s*(.+)/
-    const regexCustom = /^([^:]+):\s*(.+)/
+    // Formato WhatsApp: DD/MM/YYYY HH:MM - Nome: mensagem
+    // Também aceita: [DD/MM/YYYY, HH:MM:SS] Nome: mensagem
+    const regexWA = /^\[?(\d{2}\/\d{2}\/\d{4})[,\s]+(\d{2}:\d{2}(?::\d{2})?)\]?\s*[-–]\s*(.+?):\s*(.+)/
+    const regexCustom = /^([^:]{2,50}):\s*(.+)/
 
     let msgAtual: { sender: string; content: string; sentAt?: string } | null = null
 
     for (const linha of linhas) {
-      const m1 = linha.match(regexWA1)
+      const linhaTrimmed = linha.trim()
+
+      const m1 = linhaTrimmed.match(regexWA)
       if (m1) {
         if (msgAtual) msgs.push(msgAtual)
         const [, dia, hora, nome, conteudo] = m1
@@ -48,17 +50,44 @@ export default function ImportarPage() {
         }
         continue
       }
-      const m2 = linha.match(regexCustom)
-      if (m2) {
-        if (msgAtual) msgs.push(msgAtual)
-        msgAtual = { sender: m2[1].trim(), content: m2[2].trim() }
-        continue
+
+      // Linha de sistema do WhatsApp (ignora)
+      if (/^(As mensagens|Você foi|Este chat|Mensagens e chamadas)/.test(linhaTrimmed)) continue
+
+      // Continuação da mensagem anterior (inclui linhas em branco como quebra)
+      if (msgAtual) {
+        if (linhaTrimmed === '') {
+          msgAtual.content += '\n'
+        } else {
+          // Tenta detectar se é uma nova mensagem sem timestamp (formato Nome: msg)
+          const m2 = linhaTrimmed.match(regexCustom)
+          if (m2 && !msgAtual.content.endsWith('\n')) {
+            // Linha curta sem contexto — provavelmente nova mensagem do mesmo remetente
+            msgs.push(msgAtual)
+            msgAtual = { sender: m2[1].trim(), content: m2[2].trim(), sentAt: msgAtual.sentAt }
+          } else {
+            msgAtual.content += (msgAtual.content.endsWith('\n') ? '' : ' ') + linhaTrimmed
+          }
+        }
       }
-      // Continuação da mensagem anterior
-      if (msgAtual) msgAtual.content += ' ' + linha.trim()
     }
     if (msgAtual) msgs.push(msgAtual)
-    return msgs
+
+    // Agrupa mensagens consecutivas do mesmo remetente em até 5 minutos
+    const agrupadas: { sender: string; content: string; sentAt?: string }[] = []
+    for (const msg of msgs) {
+      const ultima = agrupadas[agrupadas.length - 1]
+      const mesmaPessoa = ultima && ultima.sender === msg.sender
+      const dentroJanela = mesmaPessoa && ultima.sentAt && msg.sentAt &&
+        Math.abs(new Date(msg.sentAt).getTime() - new Date(ultima.sentAt).getTime()) < 5 * 60 * 1000
+
+      if (dentroJanela) {
+        ultima.content += '\n' + msg.content.trim()
+      } else if (msg.content.trim()) {
+        agrupadas.push({ ...msg, content: msg.content.trim() })
+      }
+    }
+    return agrupadas
   }
 
   async function handleImportar() {

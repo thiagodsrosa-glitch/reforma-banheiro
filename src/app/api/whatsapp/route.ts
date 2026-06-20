@@ -87,7 +87,7 @@ async function processWithAI({
   }
 
   const analysis = await analyzeWhatsAppMessage({ sender, content: conteudoFinal, imageUrl, pdfUrl })
-  if (!analysis || analysis.confianca < 0.6 || analysis.tipo === 'outro') return
+  if (!analysis || analysis.confianca < 0.4 || analysis.tipo === 'outro') return
 
   // Encontra a etapa correspondente
   let stageId: string | null = null
