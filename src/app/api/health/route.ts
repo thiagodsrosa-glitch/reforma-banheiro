@@ -2,16 +2,24 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
+  const url = process.env.DATABASE_URL ?? 'NAO_DEFINIDO'
+  // Extrai só o host para debug (sem expor senha)
+  let hostInfo = 'desconhecido'
+  try {
+    const u = new URL(url)
+    hostInfo = `${u.hostname}:${u.port}/${u.pathname.slice(1)}`
+  } catch {}
+
   try {
     const count = await prisma.user.count()
-    return NextResponse.json({ ok: true, users: count, env: !!process.env.DATABASE_URL })
+    return NextResponse.json({ ok: true, users: count, host: hostInfo })
   } catch (e: any) {
     return NextResponse.json({
       ok: false,
-      error: e.message,
+      host: hostInfo,
+      urlDefined: url !== 'NAO_DEFINIDO',
+      error: e.message?.slice(0, 200),
       code: e.code,
-      meta: e.meta,
-      type: e.constructor?.name,
     }, { status: 500 })
   }
 }
