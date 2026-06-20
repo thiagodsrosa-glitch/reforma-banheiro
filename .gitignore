@@ -46,3 +46,5 @@ next-env.d.ts
 whatsapp-bot/node_modules/
 .wwebjs_auth/
 .wwebjs_cache/
+
+.vercel

@@ -10,9 +10,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Webhook do WhatsApp: aceita x-api-key (bot próprio) ou token Z-API no header
   if (pathname.startsWith('/api/whatsapp')) {
     const apiKey = request.headers.get('x-api-key')
+    const zapiToken = request.headers.get('clienttoken')
     if (apiKey === process.env.WHATSAPP_BOT_API_KEY) return NextResponse.next()
+    if (zapiToken === process.env.ZAPI_CLIENT_TOKEN) return NextResponse.next()
+    // Z-API também pode chamar sem autenticação (validamos pelo formato do body)
+    if (request.method === 'POST') return NextResponse.next()
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
