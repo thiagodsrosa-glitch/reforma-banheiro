@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { analyzeWhatsAppMessage } from '@/lib/ai'
+import { transcribeAudio } from '@/lib/transcription'
 
 // Aceita formato interno (bot próprio) e formato Z-API
 export async function POST(request: NextRequest) {
@@ -71,7 +72,21 @@ async function processWithAI({
   const imageUrl = msgType === 'image' ? mediaUrl : null
   const pdfUrl = msgType === 'document' && mediaUrl?.toLowerCase().endsWith('.pdf') ? mediaUrl : null
 
-  const analysis = await analyzeWhatsAppMessage({ sender, content, imageUrl, pdfUrl })
+  // Transcreve áudio com Whisper antes de enviar ao Claude
+  let conteudoFinal = content
+  if (msgType === 'audio' && mediaUrl) {
+    const transcricao = await transcribeAudio(mediaUrl)
+    if (transcricao) {
+      conteudoFinal = `[Áudio transcrito] ${transcricao}`
+      // Atualiza a mensagem salva com o texto transcrito
+      await prisma.whatsAppMessage.updateMany({
+        where: { sender, content, msgType: 'audio' },
+        data: { content: conteudoFinal },
+      })
+    }
+  }
+
+  const analysis = await analyzeWhatsAppMessage({ sender, content: conteudoFinal, imageUrl, pdfUrl })
   if (!analysis || analysis.confianca < 0.6 || analysis.tipo === 'outro') return
 
   // Encontra a etapa correspondente

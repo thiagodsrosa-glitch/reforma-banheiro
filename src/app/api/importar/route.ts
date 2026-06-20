@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { analyzeWhatsAppMessage } from '@/lib/ai'
+import { transcribeAudio } from '@/lib/transcription'
 
 // Processa mensagens históricas coladas pelo administrador
 export async function POST(request: NextRequest) {
