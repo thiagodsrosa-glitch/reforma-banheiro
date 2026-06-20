@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum StageStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum BudgetStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  budgets      Budget[]
+  expenses     Expense[]
+  stageUpdates StageUpdate[]
+}
+
+model Stage {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  order       Int
+  status      StageStatus   @default(PENDING)
+  progress    Int           @default(0)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  budgets     Budget[]
+  expenses    Expense[]
+  updates     StageUpdate[]
+}
+
+model StageUpdate {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  stageId   String
+  userId    String
+  stage     Stage    @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Budget {
+  id          String       @id @default(cuid())
+  supplier    String
+  description String
+  value       Float
+  category    String
+  status      BudgetStatus @default(PENDING)
+  fileUrl     String?
+  notes       String?
+  createdAt   DateTime     @default(now())
+  stageId     String?
+  userId      String
+  stage       Stage?       @relation(fields: [stageId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  description String
+  value       Float
+  category    String
+  date        DateTime
+  receiptUrl  String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  stageId     String?
+  userId      String
+  stage       Stage?   @relation(fields: [stageId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model WhatsAppMessage {
+  id        String   @id @default(cuid())
+  sender    String
+  content   String
+  mediaUrl  String?
+  msgType   String   @default("text")
+  processed Boolean  @default(false)
+  sentAt    DateTime
+  createdAt DateTime @default(now())
+}
