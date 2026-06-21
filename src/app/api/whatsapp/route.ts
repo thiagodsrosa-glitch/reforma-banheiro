@@ -11,10 +11,21 @@ export async function POST(request: NextRequest) {
   if (body.isGroup === false) return NextResponse.json({ ok: true })
   if (body.fromMe === true) return NextResponse.json({ ok: true })
 
-  // Filtra apenas o grupo da reforma
+  // Filtra apenas o grupo da reforma — outros grupos são ignorados SEM marcar como lido
   const GRUPO_NOME = process.env.WHATSAPP_GROUP_NAME ?? 'Reforma Matriz'
-  if (body.chatName && !body.chatName.includes(GRUPO_NOME)) {
+  const ehGrupoReforma = !body.chatName || body.chatName.includes(GRUPO_NOME)
+  if (!ehGrupoReforma) {
     return NextResponse.json({ ok: true, ignored: 'outro grupo' })
+  }
+
+  // Marca mensagem do grupo Reforma como lida na Z-API
+  if (body.messageId && process.env.ZAPI_INSTANCE && process.env.ZAPI_TOKEN) {
+    const zapiUrl = `https://api.z-api.io/instances/${process.env.ZAPI_INSTANCE}/token/${process.env.ZAPI_TOKEN}/read-message`
+    fetch(zapiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: body.phone ?? process.env.ZAPI_GROUP_PHONE, messageId: body.messageId }),
+    }).catch(() => null) // silencioso — não bloqueia
   }
 
   let sender: string

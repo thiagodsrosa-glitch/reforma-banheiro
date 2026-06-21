@@ -1,6 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+// Cliente criado em runtime (evita problemas de build e encoding)
+function getClient() {
+  const key = process.env.ANTHROPIC_API_KEY?.replace(/^﻿/, '').trim()
+  if (!key) throw new Error('ANTHROPIC_API_KEY não configurada')
+  return new Anthropic({ apiKey: key })
+}
 
 const SYSTEM_PROMPT = `Você é um assistente que analisa mensagens de um grupo de WhatsApp da Igreja Matriz relacionadas à REFORMA e às atividades do período da obra.
 
@@ -59,6 +64,7 @@ interface MessageInput {
 
 export async function analyzeWhatsAppMessage(msg: MessageInput): Promise<AIAnalysis | null> {
   try {
+    const anthropic = getClient()
     const userContent: Anthropic.MessageParam['content'] = []
 
     // Add image if present
@@ -117,8 +123,9 @@ Responda APENAS com um JSON válido (sem markdown, sem explicação antes ou dep
     if (!json) return null
 
     return JSON.parse(json) as AIAnalysis
-  } catch (err) {
-    console.error('[AI] Erro ao analisar mensagem:', err)
+  } catch (err: unknown) {
+    const msg2 = err instanceof Error ? err.message : String(err)
+    console.error('[AI] Erro ao analisar mensagem:', msg2)
     return null
   }
 }
