@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import DashboardCharts from '@/components/DashboardCharts'
+import Countdown from '@/components/Countdown'
 import Link from 'next/link'
 
 function fmt(value: number) {
@@ -63,6 +64,9 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-500 text-sm mt-1">Visão geral da reforma</p>
       </div>
+
+      {/* Contagem regressiva */}
+      <Countdown />
 
       {/* Summary Cards — clicáveis */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

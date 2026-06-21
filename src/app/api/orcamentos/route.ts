@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
       category: data.category,
       fileUrl: data.fileUrl,
       notes: data.notes,
+      hasContract: data.hasContract ?? false,
+      hasEPI: data.hasEPI ?? false,
       stageId: data.stageId || null,
       userId: session.userId,
     },

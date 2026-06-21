@@ -86,19 +86,22 @@ export default function Sidebar({ userName, role }: SidebarProps) {
   const NavContent = () => (
     <>
       {/* Logo */}
-      <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
+      <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          {/* Logo IEADMS */}
+          <svg viewBox="0 0 100 100" className="w-10 h-10 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="white" stroke="#8B6014" strokeWidth="8"/>
+            {/* Chamas */}
+            <path d="M50 14 C44 22,34 30,34 42 C34 52,36 56,38 58 C36 52,42 48,42 42 C42 50,44 54,50 58 C56 54,58 50,58 42 C58 48,64 52,62 58 C64 56,66 52,66 42 C66 30,56 22,50 14Z" fill="#8B6014"/>
+            <path d="M36 36 C32 40,30 46,30 50 C30 56,33 60,37 62 C34 56,36 52,38 48 C37 52,38 56,40 60 C38 54,37 48,36 36Z" fill="#8B6014"/>
+            <path d="M64 36 C68 40,70 46,70 50 C70 56,67 60,63 62 C66 56,64 52,62 48 C63 52,62 56,60 60 C62 54,63 48,64 36Z" fill="#8B6014"/>
+            <text x="50" y="82" textAnchor="middle" fill="#8B6014" fontFamily="Arial" fontWeight="bold" fontSize="13">IEADMS</text>
+          </svg>
           <div>
-            <p className="text-sm font-semibold text-gray-900 leading-tight">Igreja Matriz</p>
-            <p className="text-xs text-gray-500">Reforma Banheiro</p>
+            <p className="text-sm font-bold text-gray-900 leading-tight">Igreja Matriz</p>
+            <p className="text-xs text-amber-800 font-medium leading-tight">Reforma Banheiro Masculino</p>
           </div>
         </div>
-        {/* Botão fechar no mobile */}
         <button onClick={() => setOpen(false)} className="lg:hidden text-gray-400 hover:text-gray-600 p-1">
           <CloseIcon />
         </button>
@@ -170,13 +173,17 @@ export default function Sidebar({ userName, role }: SidebarProps) {
     <>
       {/* Header mobile com hamburger */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
-            </svg>
+        <div className="flex items-center gap-2">
+          <svg viewBox="0 0 100 100" className="w-8 h-8 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="white" stroke="#8B6014" strokeWidth="8"/>
+            <path d="M50 14 C44 22,34 30,34 42 C34 52,36 56,38 58 C36 52,42 48,42 42 C42 50,44 54,50 58 C56 54,58 50,58 42 C58 48,64 52,62 58 C64 56,66 52,66 42 C66 30,56 22,50 14Z" fill="#8B6014"/>
+            <path d="M36 36 C32 40,30 46,30 50 C30 56,33 60,37 62 C34 56,36 52,38 48 C37 52,38 56,40 60 C38 54,37 48,36 36Z" fill="#8B6014"/>
+            <path d="M64 36 C68 40,70 46,70 50 C70 56,67 60,63 62 C66 56,64 52,62 48 C63 52,62 56,60 60 C62 54,63 48,64 36Z" fill="#8B6014"/>
+          </svg>
+          <div>
+            <p className="font-bold text-gray-900 text-xs leading-tight">Igreja Matriz</p>
+            <p className="text-amber-800 text-xs leading-tight">Reforma Banheiro Masculino</p>
           </div>
-          <span className="font-semibold text-gray-900 text-sm">Igreja Matriz</span>
         </div>
         <button onClick={() => setOpen(true)} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
           <MenuIcon />

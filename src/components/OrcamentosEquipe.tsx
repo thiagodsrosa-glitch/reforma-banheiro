@@ -48,6 +48,8 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
     stageId: '',
     fileUrl: '',
     notes: '',
+    hasContract: false,
+    hasEPI: false,
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -61,7 +63,7 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
     const budget = await res.json()
     setBudgets((prev) => [budget, ...prev])
     setShowForm(false)
-    setForm({ supplier: '', description: '', value: '', category: 'Material', stageId: '', fileUrl: '', notes: '' })
+    setForm({ supplier: '', description: '', value: '', category: 'Material', stageId: '', fileUrl: '', notes: '', hasContract: false, hasEPI: false })
     setLoading(false)
   }
 
@@ -160,6 +162,35 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://drive.google.com/..."
                 />
+              </div>
+              {/* Contrato e EPI */}
+              <div className="grid grid-cols-2 gap-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-2">📄 Possui contrato?</p>
+                  <div className="flex gap-3">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="hasContract" checked={form.hasContract === true} onChange={() => setForm({ ...form, hasContract: true })} className="accent-green-600" />
+                      <span className="text-sm text-green-700 font-medium">Sim</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="hasContract" checked={form.hasContract === false} onChange={() => setForm({ ...form, hasContract: false })} className="accent-red-500" />
+                      <span className="text-sm text-red-600 font-medium">Não</span>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-2">🦺 Possui EPI?</p>
+                  <div className="flex gap-3">
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="hasEPI" checked={form.hasEPI === true} onChange={() => setForm({ ...form, hasEPI: true })} className="accent-green-600" />
+                      <span className="text-sm text-green-700 font-medium">Sim</span>
+                    </label>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input type="radio" name="hasEPI" checked={form.hasEPI === false} onChange={() => setForm({ ...form, hasEPI: false })} className="accent-red-500" />
+                      <span className="text-sm text-red-600 font-medium">Não</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Observações</label>

@@ -73,6 +73,8 @@ model Budget {
   notes          String?
   approvedByName String?
   approvedAt     DateTime?
+  hasContract    Boolean      @default(false)
+  hasEPI         Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt
   stageId        String?
