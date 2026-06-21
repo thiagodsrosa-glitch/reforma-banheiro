@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import DashboardCharts from '@/components/DashboardCharts'
+import Link from 'next/link'
 
 function fmt(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
@@ -63,32 +64,12 @@ export default async function DashboardPage() {
         <p className="text-gray-500 text-sm mt-1">Visão geral da reforma</p>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards — clicáveis */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard
-          label="Progresso Geral"
-          value={`${overallProgress}%`}
-          sub={`${completedStages}/${stages.length} etapas concluídas`}
-          color="blue"
-        />
-        <StatCard
-          label="Total Gasto"
-          value={fmt(totalSpent)}
-          sub={`Orçado aprovado: ${fmt(totalApprovedBudget)}`}
-          color="green"
-        />
-        <StatCard
-          label="Orçamentos Pendentes"
-          value={String(pendingBudgets)}
-          sub="Aguardando aprovação"
-          color="yellow"
-        />
-        <StatCard
-          label="Msgs WhatsApp"
-          value={String(messages)}
-          sub={`${users} usuários ativos`}
-          color="purple"
-        />
+        <Link href="/dashboard/etapas"><StatCard label="Progresso Geral" value={`${overallProgress}%`} sub={`${completedStages}/${stages.length} etapas concluídas`} color="blue" /></Link>
+        <Link href="/dashboard/gastos"><StatCard label="Total Gasto" value={fmt(totalSpent)} sub={`Orçado aprovado: ${fmt(totalApprovedBudget)}`} color="green" /></Link>
+        <Link href="/dashboard/orcamentos"><StatCard label="Orçamentos Pendentes" value={String(pendingBudgets)} sub="Aguardando aprovação" color="yellow" /></Link>
+        <Link href="/dashboard/whatsapp"><StatCard label="Msgs WhatsApp" value={String(messages)} sub={`${users} usuários ativos`} color="purple" /></Link>
       </div>
 
       {/* Totais por Categoria */}
@@ -118,8 +99,13 @@ export default async function DashboardPage() {
                   const approved = b?.approved ?? 0
                   const saldo = approved - spent
                   return (
-                    <tr key={cat} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 font-medium text-gray-900">{cat}</td>
+                    <tr key={cat} className="hover:bg-blue-50 cursor-pointer transition-colors group">
+                      <td className="px-6 py-3 font-medium text-gray-900">
+                        <Link href={`/dashboard/categoria/${encodeURIComponent(cat)}`} className="flex items-center gap-2 group-hover:text-blue-700">
+                          {cat}
+                          <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xs">→</span>
+                        </Link>
+                      </td>
                       <td className="px-4 py-3 text-right text-gray-600">
                         {b ? `${fmt(b.total)} (${b.count})` : '—'}
                       </td>

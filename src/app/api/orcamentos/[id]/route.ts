@@ -22,6 +22,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Apenas admin pode alterar status' }, { status: 403 })
     }
     updateData.status = data.status
+    if (data.status === 'APPROVED' || data.status === 'REJECTED') {
+      updateData.approvedByName = session.name
+      updateData.approvedAt = new Date()
+    }
   }
 
   const budget = await prisma.budget.update({ where: { id }, data: updateData })
