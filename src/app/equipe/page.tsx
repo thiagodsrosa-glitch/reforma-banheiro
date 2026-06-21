@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import Countdown from '@/components/Countdown'
 
 function fmt(v: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
@@ -26,6 +27,8 @@ export default async function EquipePage() {
         </h1>
         <p className="text-gray-500 text-sm mt-1">Reforma do Banheiro Masculino — Igreja Matriz</p>
       </div>
+
+      <Countdown />
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
