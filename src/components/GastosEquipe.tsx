@@ -24,7 +24,11 @@ const CATEGORIES = ['Material', 'Mão de obra', 'Equipamento', 'Hidráulica', 'E
 const fmt = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
-export default function GastosEquipe({ expenses: initial, stages }: { expenses: Expense[]; stages: Stage[] }) {
+export default function GastosEquipe({ expenses: initial, stages, pagamentos }: { expenses: Expense[]; stages: Stage[]; pagamentos?: boolean }) {
+  const titulo = pagamentos ? 'Pagamentos' : 'Gastos'
+  const subtitulo = pagamentos
+    ? 'Envie comprovantes de pagamento (PDF ou foto da nota fiscal)'
+    : 'Registre gastos da reforma'
   const [expenses, setExpenses] = useState(initial)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -59,10 +63,8 @@ export default function GastosEquipe({ expenses: initial, stages }: { expenses: 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gastos</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {expenses.length} lançamento(s) · Total: {fmt(total)}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">{titulo}</h1>
+          <p className="text-gray-500 text-sm mt-1">{subtitulo}</p>
         </div>
         <button
           onClick={() => setShowForm(true)}

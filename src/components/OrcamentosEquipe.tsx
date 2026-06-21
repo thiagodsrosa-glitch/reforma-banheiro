@@ -50,7 +50,12 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
     notes: '',
     hasContract: false,
     hasEPI: false,
+    justificativa: '',
   })
+
+  // Conta quantos orçamentos já existem na categoria selecionada
+  const countInCategory = budgets.filter(b => b.category === form.category).length
+  const precisaJustificativa = countInCategory < 2 // menos de 2 já cadastrados = vai ser o 1º ou 2º
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -58,12 +63,15 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
     const res = await fetch('/api/orcamentos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        notes: [form.notes, form.justificativa ? `[Justificativa] ${form.justificativa}` : ''].filter(Boolean).join(' | '),
+      }),
     })
     const budget = await res.json()
     setBudgets((prev) => [budget, ...prev])
     setShowForm(false)
-    setForm({ supplier: '', description: '', value: '', category: 'Material', stageId: '', fileUrl: '', notes: '', hasContract: false, hasEPI: false })
+    setForm({ supplier: '', description: '', value: '', category: 'Material', stageId: '', fileUrl: '', notes: '', hasContract: false, hasEPI: false, justificativa: '' })
     setLoading(false)
   }
 
@@ -138,6 +146,30 @@ export default function OrcamentosEquipe({ budgets: initial, stages }: { budgets
                   </select>
                 </div>
               </div>
+
+              {/* Aviso e justificativa quando < 3 orçamentos na categoria */}
+              {precisaJustificativa && (
+                <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 space-y-2">
+                  <p className="text-sm font-semibold text-orange-800">
+                    ⚠️ Esta categoria tem apenas {countInCategory} orçamento(s) — mínimo é 3
+                  </p>
+                  <p className="text-xs text-orange-700">
+                    Se não for possível obter 3 orçamentos, é obrigatório justificar (ex: "único fornecedor na região", "urgência", etc.)
+                  </p>
+                  <div>
+                    <label className="block text-xs font-medium text-orange-800 mb-1">Justificativa *</label>
+                    <textarea
+                      value={form.justificativa}
+                      onChange={(e) => setForm({ ...form, justificativa: e.target.value })}
+                      rows={2}
+                      required={precisaJustificativa}
+                      placeholder="Ex: Único fornecedor disponível na região para este serviço..."
+                      className="w-full border border-orange-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Etapa</label>
                 <select

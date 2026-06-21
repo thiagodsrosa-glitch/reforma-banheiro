@@ -72,7 +72,7 @@ export default function Sidebar({ userName, role }: SidebarProps) {
     { href: '/equipe', label: 'Início', icon: <HomeIcon /> },
     { href: '/equipe/etapas', label: 'Etapas', icon: <StagesIcon /> },
     { href: '/equipe/orcamentos', label: 'Orçamentos', icon: <BudgetIcon /> },
-    { href: '/equipe/gastos', label: 'Gastos', icon: <ExpenseIcon /> },
+    { href: '/equipe/pagamentos', label: 'Pagamentos', icon: <ExpenseIcon /> },
   ]
 
   const nav = role === 'ADMIN' ? adminNav : userNav
