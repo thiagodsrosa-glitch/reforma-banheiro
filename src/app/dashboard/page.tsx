@@ -26,12 +26,25 @@ export default async function DashboardPage() {
       : 0
 
   const expensesByCategory = expenses.reduce(
-    (acc, e) => {
-      acc[e.category] = (acc[e.category] ?? 0) + e.value
-      return acc
-    },
+    (acc, e) => { acc[e.category] = (acc[e.category] ?? 0) + e.value; return acc },
     {} as Record<string, number>
   )
+  const budgetsByCategory = budgets.reduce(
+    (acc, b) => {
+      if (!acc[b.category]) acc[b.category] = { total: 0, approved: 0, pending: 0, count: 0 }
+      acc[b.category].total += b.value
+      acc[b.category].count += 1
+      if (b.status === 'APPROVED') acc[b.category].approved += b.value
+      if (b.status === 'PENDING') acc[b.category].pending += b.value
+      return acc
+    },
+    {} as Record<string, { total: number; approved: number; pending: number; count: number }>
+  )
+
+  const allCategories = Array.from(new Set([
+    ...Object.keys(expensesByCategory),
+    ...Object.keys(budgetsByCategory),
+  ])).sort()
 
   const categoryData = Object.entries(expensesByCategory).map(([name, value]) => ({
     name,
@@ -77,6 +90,65 @@ export default async function DashboardPage() {
           color="purple"
         />
       </div>
+
+      {/* Totais por Categoria */}
+      {allCategories.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Orçamentos e Gastos por Categoria</h2>
+            <a href="/dashboard/simulador" className="text-sm text-blue-600 hover:underline font-medium">
+              Simulador de projeção →
+            </a>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Categoria</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Orçamentos</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Aprovados</th>
+                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Gastos reais</th>
+                  <th className="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase">Saldo</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {allCategories.map((cat) => {
+                  const b = budgetsByCategory[cat]
+                  const spent = expensesByCategory[cat] ?? 0
+                  const approved = b?.approved ?? 0
+                  const saldo = approved - spent
+                  return (
+                    <tr key={cat} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 font-medium text-gray-900">{cat}</td>
+                      <td className="px-4 py-3 text-right text-gray-600">
+                        {b ? `${fmt(b.total)} (${b.count})` : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-right text-green-700 font-medium">
+                        {approved > 0 ? fmt(approved) : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-right text-gray-700">
+                        {spent > 0 ? fmt(spent) : '—'}
+                      </td>
+                      <td className={`px-6 py-3 text-right font-semibold ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {approved > 0 || spent > 0 ? (saldo >= 0 ? '+' : '') + fmt(saldo) : '—'}
+                      </td>
+                    </tr>
+                  )
+                })}
+                <tr className="bg-gray-50 font-semibold border-t-2 border-gray-200">
+                  <td className="px-6 py-3">Total</td>
+                  <td className="px-4 py-3 text-right">{fmt(budgets.reduce((s, b) => s + b.value, 0))}</td>
+                  <td className="px-4 py-3 text-right text-green-700">{fmt(totalApprovedBudget)}</td>
+                  <td className="px-4 py-3 text-right">{fmt(totalSpent)}</td>
+                  <td className={`px-6 py-3 text-right ${totalApprovedBudget - totalSpent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {(totalApprovedBudget - totalSpent >= 0 ? '+' : '') + fmt(totalApprovedBudget - totalSpent)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Charts */}
       <DashboardCharts categoryData={categoryData} stagesData={stagesData} />
