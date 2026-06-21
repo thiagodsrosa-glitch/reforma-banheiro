@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { analyzeWhatsAppMessage } from '@/lib/ai'
 import { transcribeAudio } from '@/lib/transcription'
+import { normalizeSender } from '@/lib/names'
 
 // Aceita formato interno (bot próprio) e formato Z-API
 export async function POST(request: NextRequest) {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
   if (body.senderName !== undefined) {
     // Formato Z-API
-    sender = body.senderName || body.senderPhone || 'Desconhecido'
+    sender = normalizeSender(body.senderName || body.senderPhone || 'Desconhecido')
     content =
       body.text?.message ||
       body.image?.caption ||

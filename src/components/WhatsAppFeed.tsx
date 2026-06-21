@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { normalizeSender } from '@/lib/names'
 
 interface Message {
   id: string
@@ -92,10 +93,10 @@ export default function WhatsAppFeed({ messages: initial }: { messages: Message[
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-green-700 text-xs font-bold">
-                      {msg.sender.charAt(0).toUpperCase()}
+                      {normalizeSender(msg.sender).charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="font-medium text-sm text-gray-900">{msg.sender}</span>
+                  <span className="font-medium text-sm text-gray-900">{normalizeSender(msg.sender)}</span>
                   <span className="text-xs text-gray-400">
                     {new Date(msg.sentAt).toLocaleString('pt-BR')}
                   </span>
