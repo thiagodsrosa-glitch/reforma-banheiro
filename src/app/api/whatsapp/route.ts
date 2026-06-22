@@ -123,6 +123,7 @@ async function processWithAI({
         category: analysis.categoria ?? 'Outro',
         status: analysis.status_orcamento ?? 'PENDING',
         notes: `[IA ${Math.round(analysis.confianca * 100)}%] ${analysis.resumo}`,
+        sourceName: sender,
         stageId,
         userId: admin.id,
       },

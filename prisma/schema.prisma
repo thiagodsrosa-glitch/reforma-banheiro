@@ -75,6 +75,7 @@ model Budget {
   approvedAt     DateTime?
   hasContract    Boolean      @default(false)
   hasEPI         Boolean      @default(false)
+  sourceName     String?      // remetente real (WhatsApp) — null = cadastro manual
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt
   stageId        String?

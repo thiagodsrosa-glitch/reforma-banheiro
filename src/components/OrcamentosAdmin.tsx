@@ -12,6 +12,7 @@ interface Budget {
   status: string
   fileUrl: string | null
   notes: string | null
+  sourceName: string | null
   createdAt: Date
   user: { name: string }
   stage: { title: string } | null
@@ -42,6 +43,12 @@ export default function OrcamentosAdmin({ budgets: initial, stages }: { budgets:
   const router = useRouter()
   const [budgets, setBudgets] = useState(initial)
   const [updating, setUpdating] = useState<string | null>(null)
+
+  // Conta orçamentos por categoria para exibir X/3
+  const countByCategory = budgets.reduce((acc, b) => {
+    acc[b.category] = (acc[b.category] ?? 0) + 1
+    return acc
+  }, {} as Record<string, number>)
 
   async function updateStatus(id: string, status: string) {
     setUpdating(id)
@@ -86,7 +93,7 @@ export default function OrcamentosAdmin({ budgets: initial, stages }: { budgets:
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Etapa</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Valor</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Enviado por</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Enviado por / Data</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
@@ -97,7 +104,14 @@ export default function OrcamentosAdmin({ budgets: initial, stages }: { budgets:
                     <p className="font-medium text-gray-900">{b.supplier}</p>
                     <p className="text-xs text-gray-500 truncate max-w-[200px]">{b.description}</p>
                   </td>
-                  <td className="px-4 py-4 text-gray-600">{b.category}</td>
+                  <td className="px-4 py-4">
+                    <span className="text-gray-600">{b.category}</span>
+                    {countByCategory[b.category] !== undefined && (
+                      <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-semibold ${countByCategory[b.category] >= 3 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                        {countByCategory[b.category]}/3
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-4 text-gray-600">{b.stage?.title ?? '—'}</td>
                   <td className="px-4 py-4 text-right font-semibold text-gray-900">{fmt(b.value)}</td>
                   <td className="px-4 py-4">
@@ -105,7 +119,19 @@ export default function OrcamentosAdmin({ budgets: initial, stages }: { budgets:
                       {STATUS_LABELS[b.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-gray-500">{b.user.name}</td>
+                  <td className="px-4 py-4">
+                    {b.sourceName ? (
+                      <div>
+                        <span className="text-xs bg-green-50 text-green-700 border border-green-200 px-1.5 py-0.5 rounded font-medium">Via WhatsApp</span>
+                        <p className="text-sm text-gray-700 font-medium mt-0.5">{b.sourceName}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600">{b.user.name}</p>
+                    )}
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {new Date(b.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                    </p>
+                  </td>
                   <td className="px-4 py-4">
                     <div className="flex gap-2">
                       {b.status === 'PENDING' && (

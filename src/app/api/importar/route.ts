@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
           category: analysis.categoria ?? 'Outro',
           status: analysis.status_orcamento ?? 'PENDING',
           notes: `[Histórico IA ${Math.round(analysis.confianca * 100)}%] ${analysis.resumo}`,
+          sourceName: msg.sender,
           stageId,
           userId: admin.id,
         },
