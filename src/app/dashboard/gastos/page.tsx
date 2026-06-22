@@ -9,5 +9,11 @@ export default async function GastosAdminPage() {
       stage: { select: { title: true } },
     },
   })
-  return <GastosAdmin expenses={expenses} />
+  return <GastosAdmin expenses={expenses.map(e => ({
+    ...e,
+    date: e.date.toISOString(),
+    requestedAt: e.requestedAt?.toISOString() ?? null,
+    authorizedAt: e.authorizedAt?.toISOString() ?? null,
+    paidAt: e.paidAt?.toISOString() ?? null,
+  }))} />
 }
