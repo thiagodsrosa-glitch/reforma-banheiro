@@ -12,5 +12,9 @@ export default async function OrcamentosAdminPage() {
     }),
     prisma.stage.findMany({ orderBy: { order: 'asc' }, select: { id: true, title: true } }),
   ])
-  return <OrcamentosAdmin budgets={budgets} stages={stages} />
+  return <OrcamentosAdmin budgets={budgets.map(b => ({
+    ...b,
+    createdAt: b.createdAt.toISOString(),
+    approvedAt: b.approvedAt?.toISOString() ?? null,
+  }))} stages={stages} />
 }

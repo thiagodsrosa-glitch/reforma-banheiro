@@ -76,6 +76,7 @@ model Budget {
   hasContract    Boolean      @default(false)
   hasEPI         Boolean      @default(false)
   sourceName     String?      // remetente real (WhatsApp) — null = cadastro manual
+  situacao       String?      // agrupa orçamentos do mesmo serviço para contar X/3
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @default(now()) @updatedAt
   stageId        String?
@@ -85,18 +86,22 @@ model Budget {
 }
 
 model Expense {
-  id          String   @id @default(cuid())
-  description String
-  value       Float
-  category    String
-  date        DateTime
-  receiptUrl  String?
-  notes       String?
-  createdAt   DateTime @default(now())
-  stageId     String?
-  userId      String
-  stage       Stage?   @relation(fields: [stageId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  id           String    @id @default(cuid())
+  description  String
+  value        Float
+  category     String
+  supplierName String?
+  date         DateTime
+  requestedAt  DateTime?
+  authorizedAt DateTime?
+  paidAt       DateTime?
+  receiptUrl   String?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  stageId      String?
+  userId       String
+  stage        Stage?    @relation(fields: [stageId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
 }
 
 model WhatsAppMessage {
