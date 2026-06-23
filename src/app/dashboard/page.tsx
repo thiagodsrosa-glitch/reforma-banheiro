@@ -206,10 +206,10 @@ function StatCard({
     purple: 'text-purple-700',
   }
   return (
-    <div className={`rounded-xl border p-5 ${colors[color]}`}>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+    <div className={`rounded-xl border p-5 transition-colors ${colors[color]}`}>
+      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</p>
       <p className={`text-2xl font-bold mt-1 ${textColors[color]}`}>{value}</p>
-      <p className="text-xs text-gray-500 mt-1">{sub}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{sub}</p>
     </div>
   )
 }
