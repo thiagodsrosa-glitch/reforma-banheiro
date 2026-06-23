@@ -4,6 +4,59 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+function IEADMSLogo({ className = 'w-10 h-10' }: { className?: string }) {
+  const C = '#C8A84B'
+  return (
+    <svg viewBox="0 0 100 100" className={className} xmlns="http://www.w3.org/2000/svg">
+      {/* Anel externo */}
+      <circle cx="50" cy="50" r="46" fill="white" stroke={C} strokeWidth="7" />
+
+      {/* Chama esquerda — atrás */}
+      <path
+        d="M50 73
+           C40 73,18 65,16 50
+           C14 35,28 25,40 23
+           C38 32,36 46,38 58
+           C40 64,44 70,50 73 Z"
+        fill={C}
+      />
+
+      {/* Chama direita — atrás */}
+      <path
+        d="M50 73
+           C60 73,82 65,84 50
+           C86 35,72 25,60 23
+           C62 32,64 46,62 58
+           C60 64,56 70,50 73 Z"
+        fill={C}
+      />
+
+      {/* Chama central — na frente, cobre bordas internas das laterais */}
+      <path
+        d="M50 73
+           C39 71,27 57,30 41
+           C33 26,43 14,50 11
+           C57 14,67 26,70 41
+           C73 57,61 71,50 73 Z"
+        fill={C}
+      />
+
+      {/* Texto IEADMS */}
+      <text
+        x="50" y="83"
+        textAnchor="middle"
+        fill={C}
+        fontFamily="Arial,sans-serif"
+        fontWeight="bold"
+        fontSize="11"
+        letterSpacing="0.8"
+      >
+        IEADMS
+      </text>
+    </svg>
+  )
+}
+
 interface NavItem {
   href: string
   label: string
@@ -88,15 +141,7 @@ export default function Sidebar({ userName, role }: SidebarProps) {
       {/* Logo */}
       <div className="p-4 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          {/* Logo IEADMS */}
-          <svg viewBox="0 0 100 100" className="w-10 h-10 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="46" fill="white" stroke="#8B6014" strokeWidth="8"/>
-            {/* Chamas */}
-            <path d="M50 14 C44 22,34 30,34 42 C34 52,36 56,38 58 C36 52,42 48,42 42 C42 50,44 54,50 58 C56 54,58 50,58 42 C58 48,64 52,62 58 C64 56,66 52,66 42 C66 30,56 22,50 14Z" fill="#8B6014"/>
-            <path d="M36 36 C32 40,30 46,30 50 C30 56,33 60,37 62 C34 56,36 52,38 48 C37 52,38 56,40 60 C38 54,37 48,36 36Z" fill="#8B6014"/>
-            <path d="M64 36 C68 40,70 46,70 50 C70 56,67 60,63 62 C66 56,64 52,62 48 C63 52,62 56,60 60 C62 54,63 48,64 36Z" fill="#8B6014"/>
-            <text x="50" y="82" textAnchor="middle" fill="#8B6014" fontFamily="Arial" fontWeight="bold" fontSize="13">IEADMS</text>
-          </svg>
+          <IEADMSLogo className="w-10 h-10 flex-shrink-0" />
           <div>
             <p className="text-sm font-bold text-gray-900 leading-tight">Igreja Matriz</p>
             <p className="text-xs text-amber-800 font-medium leading-tight">Reforma Banheiro Masculino</p>
@@ -174,12 +219,7 @@ export default function Sidebar({ userName, role }: SidebarProps) {
       {/* Header mobile com hamburger */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">
-          <svg viewBox="0 0 100 100" className="w-8 h-8 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="46" fill="white" stroke="#8B6014" strokeWidth="8"/>
-            <path d="M50 14 C44 22,34 30,34 42 C34 52,36 56,38 58 C36 52,42 48,42 42 C42 50,44 54,50 58 C56 54,58 50,58 42 C58 48,64 52,62 58 C64 56,66 52,66 42 C66 30,56 22,50 14Z" fill="#8B6014"/>
-            <path d="M36 36 C32 40,30 46,30 50 C30 56,33 60,37 62 C34 56,36 52,38 48 C37 52,38 56,40 60 C38 54,37 48,36 36Z" fill="#8B6014"/>
-            <path d="M64 36 C68 40,70 46,70 50 C70 56,67 60,63 62 C66 56,64 52,62 48 C63 52,62 56,60 60 C62 54,63 48,64 36Z" fill="#8B6014"/>
-          </svg>
+          <IEADMSLogo className="w-8 h-8 flex-shrink-0" />
           <div>
             <p className="font-bold text-gray-900 text-xs leading-tight">Igreja Matriz</p>
             <p className="text-amber-800 text-xs leading-tight">Reforma Banheiro Masculino</p>
