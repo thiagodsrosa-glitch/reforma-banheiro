@@ -20,7 +20,7 @@ interface Stage {
   title: string
 }
 
-const CATEGORIES = ['Material', 'Mão de obra', 'Equipamento', 'Hidráulica', 'Elétrica', 'Revestimento', 'Pintura', 'Outro']
+const CATEGORIES = ['Alvenaria', 'Material', 'Mão de obra', 'Equipamento', 'Hidráulica', 'Elétrica', 'Revestimento', 'Pintura', 'Outro']
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'Aguardando aprovação',

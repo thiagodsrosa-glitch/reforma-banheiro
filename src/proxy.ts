@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/auth'
 
-const publicPaths = ['/login', '/api/auth/login', '/api/health']
+const publicPaths = ['/login', '/api/auth/login', '/api/health', '/apresentacao']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -31,7 +31,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (pathname.startsWith('/dashboard') && session.role !== 'ADMIN') {
+  if (pathname.startsWith('/dashboard') && session.role !== 'ADMIN' && session.role !== 'OBSERVADOR') {
+    return NextResponse.redirect(new URL('/equipe', request.url))
+  }
+
+  // OBSERVADOR só pode ver /dashboard (página principal), não subpáginas
+  if (pathname.startsWith('/dashboard/') && session.role === 'OBSERVADOR') {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Pagamentos: só TESOURARIA e ADMIN
+  if (pathname.startsWith('/equipe/pagamentos') && session.role !== 'TESOURARIA' && session.role !== 'ADMIN') {
     return NextResponse.redirect(new URL('/equipe', request.url))
   }
 

@@ -2,12 +2,16 @@ import { prisma } from '@/lib/prisma'
 import DashboardCharts from '@/components/DashboardCharts'
 import Countdown from '@/components/Countdown'
 import Link from 'next/link'
+import { getSession } from '@/lib/auth'
 
 function fmt(value: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 }
 
 export default async function DashboardPage() {
+  const session = await getSession()
+  const readOnly = session?.role === 'OBSERVADOR'
+
   const [stages, budgets, expenses, messages, users] = await Promise.all([
     prisma.stage.findMany({ orderBy: { order: 'asc' } }),
     prisma.budget.findMany(),
@@ -43,7 +47,9 @@ export default async function DashboardPage() {
     {} as Record<string, { total: number; approved: number; pending: number; count: number }>
   )
 
+  const CATEGORIAS_FIXAS = ['Alvenaria', 'Elétrica', 'Hidráulica', 'Revestimento', 'Acabamento']
   const allCategories = Array.from(new Set([
+    ...CATEGORIAS_FIXAS,
     ...Object.keys(expensesByCategory),
     ...Object.keys(budgetsByCategory),
   ])).sort()
@@ -68,12 +74,28 @@ export default async function DashboardPage() {
       {/* Contagem regressiva */}
       <Countdown />
 
-      {/* Summary Cards — clicáveis */}
+      {/* Summary Cards */}
+      {readOnly && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-sm text-amber-700 font-medium">
+          Modo somente visualização — navegação entre páginas não disponível para este perfil.
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Link href="/dashboard/etapas"><StatCard label="Progresso Geral" value={`${overallProgress}%`} sub={`${completedStages}/${stages.length} etapas concluídas`} color="blue" /></Link>
-        <Link href="/dashboard/gastos"><StatCard label="Total Gasto" value={fmt(totalSpent)} sub={`Orçado aprovado: ${fmt(totalApprovedBudget)}`} color="green" /></Link>
-        <Link href="/dashboard/orcamentos"><StatCard label="Orçamentos Pendentes" value={String(pendingBudgets)} sub="Aguardando aprovação" color="yellow" /></Link>
-        <Link href="/dashboard/whatsapp"><StatCard label="Msgs WhatsApp" value={String(messages)} sub={`${users} usuários ativos`} color="purple" /></Link>
+        {readOnly ? (
+          <>
+            <StatCard label="Progresso Geral" value={`${overallProgress}%`} sub={`${completedStages}/${stages.length} etapas concluídas`} color="blue" />
+            <StatCard label="Total Gasto" value={fmt(totalSpent)} sub={`Orçado aprovado: ${fmt(totalApprovedBudget)}`} color="green" />
+            <StatCard label="Orçamentos Pendentes" value={String(pendingBudgets)} sub="Aguardando aprovação" color="yellow" />
+            <StatCard label="Msgs WhatsApp" value={String(messages)} sub={`${users} usuários ativos`} color="purple" />
+          </>
+        ) : (
+          <>
+            <Link href="/dashboard/etapas"><StatCard label="Progresso Geral" value={`${overallProgress}%`} sub={`${completedStages}/${stages.length} etapas concluídas`} color="blue" /></Link>
+            <Link href="/dashboard/gastos"><StatCard label="Total Gasto" value={fmt(totalSpent)} sub={`Orçado aprovado: ${fmt(totalApprovedBudget)}`} color="green" /></Link>
+            <Link href="/dashboard/orcamentos"><StatCard label="Orçamentos Pendentes" value={String(pendingBudgets)} sub="Aguardando aprovação" color="yellow" /></Link>
+            <Link href="/dashboard/whatsapp"><StatCard label="Msgs WhatsApp" value={String(messages)} sub={`${users} usuários ativos`} color="purple" /></Link>
+          </>
+        )}
       </div>
 
       {/* Totais por Categoria */}
@@ -81,9 +103,11 @@ export default async function DashboardPage() {
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-semibold text-gray-900">Orçamentos e Gastos por Categoria</h2>
-            <a href="/dashboard/simulador" className="text-sm text-blue-600 hover:underline font-medium">
-              Simulador de projeção →
-            </a>
+            {!readOnly && (
+              <a href="/dashboard/simulador" className="text-sm text-blue-600 hover:underline font-medium">
+                Simulador de projeção →
+              </a>
+            )}
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[600px]">
@@ -103,12 +127,16 @@ export default async function DashboardPage() {
                   const approved = b?.approved ?? 0
                   const saldo = approved - spent
                   return (
-                    <tr key={cat} className="hover:bg-blue-50 cursor-pointer transition-colors group">
+                    <tr key={cat} className={`transition-colors ${readOnly ? '' : 'hover:bg-blue-50 cursor-pointer group'}`}>
                       <td className="px-6 py-3 font-medium text-gray-900">
-                        <Link href={`/dashboard/categoria/${encodeURIComponent(cat)}`} className="flex items-center gap-2 group-hover:text-blue-700">
-                          {cat}
-                          <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xs">→</span>
-                        </Link>
+                        {readOnly ? (
+                          <span>{cat}</span>
+                        ) : (
+                          <Link href={`/dashboard/categoria/${encodeURIComponent(cat)}`} className="flex items-center gap-2 group-hover:text-blue-700">
+                            {cat}
+                            <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xs">→</span>
+                          </Link>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right text-gray-600">
                         {b ? `${fmt(b.total)} (${b.count})` : '—'}

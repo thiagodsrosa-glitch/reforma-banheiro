@@ -10,7 +10,7 @@ interface Message {
   mediaUrl: string | null
   msgType: string
   processed: boolean
-  sentAt: Date
+  sentAt: string
 }
 
 export default function WhatsAppFeed({ messages: initial }: { messages: Message[] }) {

@@ -3,6 +3,16 @@ import { prisma } from '@/lib/prisma'
 import { analyzeWhatsAppMessage } from '@/lib/ai'
 import { transcribeAudio } from '@/lib/transcription'
 import { normalizeSender } from '@/lib/names'
+import { enviarMensagemGrupo } from '@/lib/zapi'
+
+function fmt(v: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+}
+
+const PRESIDENCIA = ['pr. felipe', 'pra. hyanna', 'felipe', 'hyanna']
+function ehPresidencia(nome: string) {
+  return PRESIDENCIA.some((p) => nome.toLowerCase().includes(p))
+}
 
 // Aceita formato interno (bot próprio) e formato Z-API
 export async function POST(request: NextRequest) {
@@ -47,7 +57,14 @@ export async function POST(request: NextRequest) {
       `[${body.type ?? 'mídia'}]`
     mediaUrl = body.image?.imageUrl || body.video?.videoUrl || body.document?.documentUrl || null
     msgType = body.text ? 'text' : body.image ? 'image' : body.video ? 'video' : body.document ? 'document' : 'other'
-    sentAt = body.momment ? new Date(body.momment * 1000) : new Date()
+    const rawTs = Number(body.momment ?? body.timestamp ?? body.moment ?? 0)
+    if (rawTs > 9999999999) {
+      sentAt = new Date(rawTs)          // já em milissegundos
+    } else if (rawTs > 1000000000) {
+      sentAt = new Date(rawTs * 1000)   // em segundos (padrão Z-API)
+    } else {
+      sentAt = new Date()               // fallback: agora
+    }
   } else {
     // Formato interno
     sender = body.sender
@@ -149,6 +166,46 @@ async function processWithAI({
         userId: admin.id,
       },
     })
+  } else if (analysis.tipo === 'autorizacao' && ehPresidencia(sender)) {
+    // Aprovação via WhatsApp pela presidência — busca orçamento pendente mais recente que bate com o contexto
+    const pendentes = await prisma.budget.findMany({
+      where: { status: 'PENDING' },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    })
+
+    // Tenta combinar por descrição, fornecedor ou valor
+    const desc = (analysis.descricao ?? '').toLowerCase()
+    const forn = (analysis.fornecedor ?? '').toLowerCase()
+    const val = analysis.valor
+
+    const match = pendentes.find((b) => {
+      if (val && Math.abs(b.value - val) < 1) return true
+      if (forn && b.supplier.toLowerCase().includes(forn)) return true
+      if (desc && b.description.toLowerCase().split(' ').some((w) => w.length > 4 && desc.includes(w))) return true
+      return false
+    }) ?? pendentes[0] // fallback: orçamento pendente mais recente
+
+    if (match) {
+      await prisma.budget.update({
+        where: { id: match.id },
+        data: {
+          status: analysis.status_orcamento === 'REJECTED' ? 'REJECTED' : 'APPROVED',
+          approvedByName: sender,
+          approvedAt: new Date(),
+          notes: (match.notes ?? '') + `\n[WhatsApp] ${sender}: "${content.slice(0, 100)}"`,
+        },
+      })
+
+      const acao = analysis.status_orcamento === 'REJECTED' ? '❌ REJEITADO' : '✅ APROVADO'
+      enviarMensagemGrupo(
+        `${acao} via WhatsApp por ${sender}\n` +
+        `📋 *${match.description}*\n` +
+        `🏢 Fornecedor: ${match.supplier}\n` +
+        `💰 Valor: ${fmt(match.value)}\n` +
+        `_(registrado automaticamente no sistema)_`
+      ).catch(() => null)
+    }
   }
 }
 

@@ -31,9 +31,11 @@ interface NavItem {
   icon: React.ReactNode
 }
 
+type SidebarRole = 'USER' | 'OPERACIONAL' | 'TESOURARIA' | 'OBSERVADOR' | 'ADMIN'
+
 interface SidebarProps {
   userName: string
-  role: 'USER' | 'ADMIN'
+  role: SidebarRole
 }
 
 function HomeIcon() {
@@ -56,6 +58,9 @@ function SimulatorIcon() {
 }
 function ImportIcon() {
   return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+}
+function ReportIcon() {
+  return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
 }
 function UsersIcon() {
   return <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
@@ -86,17 +91,30 @@ export default function Sidebar({ userName, role }: SidebarProps) {
     { href: '/dashboard/simulador', label: 'Simulador', icon: <SimulatorIcon /> },
     { href: '/dashboard/whatsapp', label: 'WhatsApp', icon: <WhatsAppIcon /> },
     { href: '/dashboard/importar', label: 'Importar Histórico', icon: <ImportIcon /> },
+    { href: '/dashboard/relatorio', label: 'Relatórios', icon: <ReportIcon /> },
     { href: '/dashboard/usuarios', label: 'Usuários', icon: <UsersIcon /> },
   ]
 
-  const userNav: NavItem[] = [
+  const operacionalNav: NavItem[] = [
     { href: '/equipe', label: 'Início', icon: <HomeIcon /> },
     { href: '/equipe/etapas', label: 'Etapas', icon: <StagesIcon /> },
     { href: '/equipe/orcamentos', label: 'Orçamentos', icon: <BudgetIcon /> },
+  ]
+
+  const tesourariaNav: NavItem[] = [
+    ...operacionalNav,
     { href: '/equipe/pagamentos', label: 'Pagamentos', icon: <ExpenseIcon /> },
   ]
 
-  const nav = role === 'ADMIN' ? adminNav : userNav
+  const observadorNav: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: <HomeIcon /> },
+  ]
+
+  const nav = role === 'ADMIN'
+    ? adminNav
+    : role === 'OBSERVADOR'
+    ? observadorNav
+    : (role === 'TESOURARIA' ? tesourariaNav : operacionalNav)
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -148,7 +166,9 @@ export default function Sidebar({ userName, role }: SidebarProps) {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
-            <p className="text-xs text-gray-500">{role === 'ADMIN' ? 'Administrador' : 'Equipe'}</p>
+            <p className="text-xs text-gray-500">
+              {role === 'ADMIN' ? 'Administrador' : role === 'OBSERVADOR' ? 'Observador' : role === 'TESOURARIA' ? 'Tesouraria' : 'Operacional'}
+            </p>
           </div>
         </div>
         {role === 'ADMIN' && (

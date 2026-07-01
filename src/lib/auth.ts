@@ -5,11 +5,23 @@ const secret = new TextEncoder().encode(
   process.env.JWT_SECRET ?? 'reforma-banheiro-secret-key-change-in-production'
 )
 
+export type AppRole = 'USER' | 'OPERACIONAL' | 'TESOURARIA' | 'OBSERVADOR' | 'ADMIN'
+
 export interface SessionPayload {
   userId: string
   email: string
   name: string
-  role: 'USER' | 'ADMIN'
+  role: AppRole
+}
+
+/** Retorna true para qualquer role que tem acesso a área administrativa (gastos, pagamentos) */
+export function isTesouraria(role: AppRole) {
+  return role === 'TESOURARIA' || role === 'ADMIN'
+}
+
+/** Retorna true se o role tem acesso de time (não admin) */
+export function isEquipe(role: AppRole) {
+  return role !== 'ADMIN'
 }
 
 export async function signToken(payload: SessionPayload): Promise<string> {

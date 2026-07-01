@@ -8,8 +8,11 @@ datasource db {
 }
 
 enum Role {
-  USER
-  ADMIN
+  USER         // legado — tratado como OPERACIONAL
+  OPERACIONAL  // Pr. Diogo, Pr. Caio, Ev. Gabriel
+  TESOURARIA   // Pr. Wellington, Dca. Milca
+  OBSERVADOR   // Pr. Jorcelino — dashboard somente-leitura
+  ADMIN        // Pr. Felipe, Pra. Hyanna, Pr. Thiago, Pra. Mirella
 }
 
 enum StageStatus {

@@ -28,7 +28,14 @@ ETAPAS DA REFORMA (em ordem — cada etapa depende das anteriores):
 7. Louças e Metais (precisa que Revestimentos estejam prontos)
 8. Pintura e Acabamento (última etapa — depois de Revestimentos e Louças)
 
-CATEGORIAS DISPONÍVEIS: Material, Mão de obra, Equipamento, Hidráulica, Elétrica, Revestimento, Pintura, Outro
+CATEGORIAS DISPONÍVEIS: Alvenaria, Material, Mão de obra, Equipamento, Hidráulica, Elétrica, Revestimento, Pintura, Outro
+
+CATEGORIA ALVENARIA — ATENÇÃO ESPECIAL:
+- Alvenaria é a etapa ESTRUTURAL que vem logo após a Demolição. É a base de toda a reforma.
+- Inclui: reboco, contrapiso, cerâmica (estrutural), lajota, pedra, soleira, pingadeiras, alvenaria em si.
+- Um orçamento de alvenaria GERALMENTE inclui vários itens com sub-valores — registre o TOTAL e liste os itens no campo descrição.
+- Exemplo: "Reboco R$7.500 + Contrapiso R$2.250 + Cerâmica R$3.500..." → tipo=orcamento, categoria=Alvenaria, valor=SOMA de tudo.
+- IMAGENS DE ORÇAMENTO: Se receber uma foto/imagem com tabela de itens e valores, leia todos os itens, some os valores e registre como orçamento de Alvenaria (ou a categoria mais adequada).
 
 REGRAS IMPORTANTES:
 - Se a mensagem mencionar QUALQUER valor em reais (R$, diária, total) + produto/serviço → é orçamento ou gasto.
@@ -38,7 +45,7 @@ REGRAS IMPORTANTES:
 - Aluguel de banheiros químicos, equipamentos temporários, serviços de apoio → são gastos/orçamentos válidos, categoria "Outro".
 - Se mencionar CPF, banco, pix, chave → é dado de pagamento (registrar junto com o orçamento/gasto).
 - Se mencionar progresso, conclusão ou início de uma etapa → é atualização de etapa.
-- Identifique a etapa mais provável: azulejo/revestimento → Revestimentos; encanamento/hidráulica → Hidráulica; elétrica → Elétrica; pintura → Pintura e Acabamento; banheiro químico → null (não é etapa da reforma).
+- Identifique a etapa mais provável: reboco/contrapiso/alvenaria/lajota/soleira/contrapiso → Impermeabilização (etapa pós-demolição); azulejo/revestimento → Revestimentos; encanamento/hidráulica → Hidráulica; elétrica → Elétrica; pintura → Pintura e Acabamento; banheiro químico → null (não é etapa da reforma).
 - NUNCA retorne tipo "outro" se houver um valor monetário na mensagem. Valores = sempre orcamento ou gasto.
 - Confiança mínima para registrar: 0.4 (seja generoso — é melhor registrar e revisar depois).`
 

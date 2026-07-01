@@ -8,7 +8,7 @@ export default async function EquipeLayout({ children }: { children: React.React
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar userName={session.name} role="USER" />
+      <Sidebar userName={session.name} role={session.role === 'ADMIN' ? 'TESOURARIA' : (session.role as 'OPERACIONAL' | 'TESOURARIA' | 'USER')} />
       <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950">
         {session.role === 'ADMIN' && (
           <div className="lg:hidden fixed top-14 left-0 right-0 z-30 bg-purple-600 text-white text-xs text-center py-1.5 flex items-center justify-center gap-2">

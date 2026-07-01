@@ -19,7 +19,7 @@ interface Stage {
   title: string
 }
 
-const CATEGORIES = ['Material', 'Mão de obra', 'Equipamento', 'Hidráulica', 'Elétrica', 'Revestimento', 'Pintura', 'Alimentação', 'Transporte', 'Outro']
+const CATEGORIES = ['Alvenaria', 'Material', 'Mão de obra', 'Equipamento', 'Hidráulica', 'Elétrica', 'Revestimento', 'Pintura', 'Alimentação', 'Transporte', 'Outro']
 
 const fmt = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
