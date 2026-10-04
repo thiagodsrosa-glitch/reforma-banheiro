@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/auth'
 
-const publicPaths = ['/login', '/api/auth/login', '/api/health', '/apresentacao']
+const publicPaths = ['/login', '/api/auth/login', '/api/health', '/apresentacao', '/apuracao', '/api/apuracao']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl

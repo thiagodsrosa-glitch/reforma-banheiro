@@ -74,3 +74,9 @@ Default credentials after seed:
 - Equipe: `equipe@igrejamatriz.com` / `equipe123`
 
 Change passwords after first login.
+
+## Apuração (TSE)
+
+Página pública `/apuracao` mostra em cards a apuração para Presidente no **Brasil** e no **Exterior**, com atualização automática a cada 30s. Os dados vêm de `GET /api/apuracao`, que consulta `resultados.tse.jus.br` no servidor (`src/lib/tse.ts`). Use `/apuracao?demo=1` para ver dados fictícios.
+
+Variáveis opcionais: `TSE_CICLO` (padrão `ele2026`), `TSE_ELEICAO` (código da eleição; se ausente, é descoberto em `comum/config/ele-c.json`), `TSE_BASE_URL`.
